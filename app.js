@@ -11,7 +11,9 @@ var setUpPassport = require("./setuppassport");
 var app = express();
 
 
-mongoose.connect("mongodb://localhost:27017/fproject");
+//mongoose.connect("mongodb://localhost:27017/fproject");
+var url = process.env.MONGOLAB_URI;
+mongoose.connect(url);
 setUpPassport();
 app.set("port", process.env.PORT || 3000);
 app.set("views", path.join(__dirname, "views"));
