@@ -11,12 +11,13 @@ var setUpPassport = require("./setuppassport");
 var app = express();
 
 
-//mongoose.connect("mongodb://localhost:27017/fproject");
+mongoose.connect("mongodb://localhost:27017/fproject");
 var url = process.env.MONGOLAB_URI;
-mongoose.connect(url);
+//mongoose.connect(url);
 setUpPassport();
 app.set("port", process.env.PORT || 3000);
 app.set("views", path.join(__dirname, "views"));
+app.use(express.static(__dirname + '/public'));
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());

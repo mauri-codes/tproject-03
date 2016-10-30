@@ -1,8 +1,9 @@
 var express = require("express");
 var User = require("./models/user");
 var Device = require("./models/device");
+var Devuser = require("./models/devuser");
+var Link = require("./models/link");
 var passport = require("passport");
-
 var router = express.Router();
 
 

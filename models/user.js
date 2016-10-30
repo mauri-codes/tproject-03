@@ -6,8 +6,7 @@ var userSchema = mongoose.Schema({
     password: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
     displayName: String,
-    role: { type: String, default: "cliente"},
-    fingerprintID: Number
+    role: { type: String, default: "cliente"}//visitante, cliente, empleado, administrador
 });
 
 userSchema.methods.name = function() {
