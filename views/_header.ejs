@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Scanner</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+<div class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">Empresa muy famosa</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <% if (currentUser) { %>
+            <li>
+                <a href="/edit">
+                    Hola, <%= currentUser.name() %>
+                </a>
+            </li>
+            <li><a href="/devices">Dispositivos</a></li>
+            <li><a href="/logout">Cerrar Sesion</a></li>
+            <% } else { %>
+            <li><a href="/login">Iniciar Sesion</a></li>
+            <li><a href="/signup">Registrate</a></li>
+            <% } %>
+        </ul>
+    </div>
+</div>
+<div class="container">
+    <% errors.forEach(function(error) { %>
+    <div class="alert alert-danger" role="alert">
+        <%= error %>
+    </div>
+    <% }) %>
+    <% infos.forEach(function(info) { %>
+    <div class="alert alert-info" role="alert">
+        <%= info %>
+    </div>
+<% }) %>

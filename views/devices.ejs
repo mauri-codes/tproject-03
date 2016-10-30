@@ -1,0 +1,18 @@
+<% include _header %>
+<h2>Dispositivos</h2>
+<% devices.forEach(function(device) { %>
+<div class="panel panel-default">
+    <div class="panel-heading">
+            <%= device.name() %>
+    </div>
+</div>
+<% }) %>
+<h1>Crea un nuevo dispositivo</h1>
+<form action="/device" method="post">
+    <input name="devicename" type="text" class="form-control"
+           placeholder="Devicename" required autofocus>
+    <input name="password" type="password" class="form-control"
+           placeholder="Password" required>
+    <input type="submit" value="Crear Dispositivo" class="btn btn-primary btn-block">
+</form>
+<% include _footer %>
