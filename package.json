@@ -2,8 +2,7 @@
   "name": "t-project-03",
   "private": true,
   "scripts": {
-    "start": "node app",
-    "start2": "nodemon app"
+    "start": "node app"
   },
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",

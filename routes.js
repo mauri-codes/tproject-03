@@ -121,14 +121,14 @@ router.post("/device", ensureAuthenticated, function(req, res) {
 });
 
 router.post("/try", function (req, res, next) {
-    var username = req.body.username;
+    var devicename = req.body.devicename;
     var password = req.body.password;
-    User.findOne({ username: username }, function(err, user) {
+    Device.findOne({ deviceName: devicename }, function(err, device) {
         if (err) { res.json({"data": err})}
-        if (!user) {
-            res.json({"data": "No user has that username!" });
+        if (!device) {
+            res.json({"data": "No device has that device name!" });
         }
-        user.checkPassword(password, function(err, isMatch) {
+        device.checkPassword(password, function(err, isMatch) {
             if (err) { res.json({"data": err})}
             if (isMatch) {
                 next();
