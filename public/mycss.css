@@ -1,3 +1,26 @@
-body {
+.registered{
+    cursor: default;
+}
+.newDev{
+    background-color: ghostwhite;
+}
+.devall{
 
+}
+.loading{
+    width: 50px;
+    height: 50px;
+}
+.divImage{
+    position: relative;
+    top: 40%;
+    left: 48%;
+}
+.loadingmessage{
+    position: relative;
+    left: 40%;
+    width: 20%;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
 }

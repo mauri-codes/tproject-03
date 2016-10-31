@@ -1,18 +1,30 @@
 <% include _header %>
 <h2>Dispositivos</h2>
-<% devices.forEach(function(device) { %>
-<div class="panel panel-default">
-    <div class="panel-heading">
+<div class="devall">
+    <% var x = 0;
+    devices.forEach(function(device) { %>
+    <div class="panel panel-default">
+        <div class="dev panel-heading">
             <%= device.name() %>
+            <% x = x + 1;
+            if(!currentUser.registered && x == 1){%>
+            <p class="register btn btn-warning btn-xs pull-right"> Registrar Huella</p>
+            <%} else{%>
+            <p class="registered btn btn-success btn-xs pull-right"> Registrado</p>
+            <%}%>
+        </div>
+    </div>
+    <% }) %>
+    <div class="newDev well">
+        <h2>Crea un nuevo dispositivo</h2>
+        <form action="/device" method="post">
+            <input name="devicename" type="text" class="form-control"
+                   placeholder="Nombre del dispositivo" required autofocus>
+            <input name="password" type="password" class="form-control"
+                   placeholder="Contraseña" required>
+            <input type="submit" value="Crear Dispositivo" class="btn btn-primary btn-block">
+        </form>
     </div>
 </div>
-<% }) %>
-<h1>Crea un nuevo dispositivo</h1>
-<form action="/device" method="post">
-    <input name="devicename" type="text" class="form-control"
-           placeholder="Devicename" required autofocus>
-    <input name="password" type="password" class="form-control"
-           placeholder="Password" required>
-    <input type="submit" value="Crear Dispositivo" class="btn btn-primary btn-block">
-</form>
+
 <% include _footer %>

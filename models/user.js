@@ -6,6 +6,7 @@ var userSchema = mongoose.Schema({
     password: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
     displayName: String,
+    registered: {type: Boolean, default: false},
     role: { type: String, default: "cliente"}//visitante, cliente, empleado, administrador
 });
 
