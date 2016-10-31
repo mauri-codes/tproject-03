@@ -143,7 +143,7 @@ router.post("/try", function (req, res, next) {
 router.post("/try", function (req, res) {
     // res.json({"data": "success"});
     var data = req.body;
-    Link.findOneAndUpdate({"devicename": data.devicename}, {"status": "Fingerprint", "fingerprint": data.id}, function(err, doc){
+    Link.findOneAndUpdate({"devicename": data.devicename}, {"status": "Fingerprint", "fingerprint": parseInt(data.id)}, function(err, doc){
         if (err) return res.send(500, { error: err });
         res.json({"data": "successful"});
     });
