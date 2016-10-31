@@ -18,7 +18,7 @@
         <ul class="nav navbar-nav navbar-right">
             <% if (currentUser) { %>
             <li>
-                <a href="/edit">
+                <a href="/edit" class="hello" id="<%= currentUser.name()%>">
                     Hola, <%= currentUser.name() %>
                 </a>
             </li>

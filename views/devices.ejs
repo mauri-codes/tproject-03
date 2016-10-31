@@ -1,17 +1,11 @@
 <% include _header %>
 <h2>Dispositivos</h2>
 <div class="devall">
-    <% var x = 0;
-    devices.forEach(function(device) { %>
+    <% devices.forEach(function(device) { %>
     <div class="panel panel-default">
         <div class="dev panel-heading">
             <%= device.name() %>
-            <% x = x + 1;
-            if(!currentUser.registered && x == 1){%>
             <p class="register btn btn-warning btn-xs pull-right"> Registrar Huella</p>
-            <%} else{%>
-            <p class="registered btn btn-success btn-xs pull-right"> Registrado</p>
-            <%}%>
         </div>
     </div>
     <% }) %>

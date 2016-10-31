@@ -141,7 +141,57 @@ router.post("/try", function (req, res, next) {
     //res.json({"data": "hello " + username, "data2": "your password is: " +password, "result": t});
 });
 router.post("/try", function (req, res) {
-    res.json({"data": "success"});
+    // res.json({"data": "success"});
+    var data = req.body;
+    Link.findOneAndUpdate({"devicename": data.devicename}, {"status": "Fingerprint", "fingerprint": data.id}, function(err, doc){
+        if (err) return res.send(500, { error: err });
+        res.json({"data": "successful"});
+    });
+    // var newDevuser = new Devuser({
+    //     username: username,
+    //     password: password
+    // });
+    // newDevuser.save();
+});
+
+router.post("/setlink", function (req, res) {
+    var data = req.body;
+    Link.remove({"username": data.name}, function (err) {
+        if(err) console.log(err);
+    });
+    var newLink = new Link({
+        linkID: data.id,
+        username: data.name,
+        status: data.status,
+        processName: data.process,
+        devicename: data.device
+    });
+    newLink.save(function(err,resp) {
+        if(err) {
+            console.log(err);
+            res.send({
+                message :'something went wrong'
+            });
+        }
+    });
+    res.json({"id": data.id});
+});
+
+router.post("/getconnection", function (req, res) {
+    var data = req.body;
+    Link.findOne({"linkID": data.id} ,function(err, link) {
+        if (err) { oonsole.log(err)}
+        if(link.processName === data.process){
+            if(link.status === "WaitingF"){
+                res.json({ "link": link, "status": "waiting"});
+            }
+            if(link.status === "Fingerprint"){//fingerprint connection established
+                res.json({ "link": link.fingerprint, "status": "Fingerprint"});
+                //I should actually change this status to done here
+            }
+        }
+        else{ res.json({"status": "not fine"});}
+    });
 });
 
 module.exports = router;
