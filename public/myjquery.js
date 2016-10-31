@@ -74,7 +74,8 @@ function findConnectionR(n, id) {
                 setTimeout(findConnectionR, 5000, n-1, id);
             }
             if (data.status === "Fingerprint"){
-                alert("surprise surprise " + data.link);
+                //alert("hello world");
+                RegisterUser();
                 //ajaxDelete(nameToDelete);
             }
         },
@@ -87,13 +88,11 @@ function findConnectionR(n, id) {
 function RegisterUser() {
     $.ajax({
         type:'POST',
-        url: '/delete',
-        data: {"name": nameToDelete, "process": "delUser"},
+        url: '/registeruser',
+        data: {"process": "Register"},
         success: function () {
-            $(".loadingmessage").text("User Deleted from Database");
-            $(".loadingmessage").css({ 'font-weight': 'bold' });
+            $(".loadingmessage").text("Usuario Registrado exitosamente en la base de datos");
             setTimeout(removeMessage, 2000);
-            $("#"+nameToDelete).parent().parent().remove();
             //sometimes I feel I shouldn't use setTimeout so heavily
         },
         error: function () {

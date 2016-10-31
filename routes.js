@@ -156,7 +156,7 @@ router.post("/try", function (req, res) {
 
 router.post("/setlink", function (req, res) {
     var data = req.body;
-    Link.remove({"username": data.name}, function (err) {
+    Link.remove({"processName": "Register"}, function (err) {
         if(err) console.log(err);
     });
     var newLink = new Link({
@@ -191,6 +191,23 @@ router.post("/getconnection", function (req, res) {
             }
         }
         else{ res.json({"status": "not fine"});}
+    });
+});
+
+router.post("/registeruser", function (req, res) {
+    //var data = req.body;
+    Link.findOne({"processName": "Register", "status": "Fingerprint"} ,function(err, link) {
+        if (err) { oonsole.log(err)}
+        var newDevuser = new Devuser({
+            username: link.username,
+            devicename: link.devicename,
+            fingerprintID: link.fingerprint
+        });
+        newDevuser.save();
+        User.findOneAndUpdate({"username": link.username}, {"registered": true}, function(err, doc){
+            if (err) return res.send(500, { error: err });
+            res.sendStatus(200);
+        });
     });
 });
 

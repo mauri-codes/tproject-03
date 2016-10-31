@@ -5,6 +5,9 @@
     <div class="panel panel-default">
         <div class="dev panel-heading">
             <%= device.name() %>
+            <% if(currentUser.registered) { %>
+            <p class="registered label label-success pull-right"> Registrado </p>
+            <% } %>
             <p class="register btn btn-warning btn-xs pull-right"> Registrar Huella</p>
         </div>
     </div>
