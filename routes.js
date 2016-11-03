@@ -153,10 +153,49 @@ router.post("/try", function (req, res) {
     // });
     // newDevuser.save();
 });
+router.post("/catch", function (req, res, next) {
+    var devicename = req.body.devicename;
+    var password = req.body.password;
+    Device.findOne({ deviceName: devicename }, function(err, device) {
+        if (err) { res.json({"data": err})}
+        if (!device) {
+            res.json({"data": "No device has that device name!" });
+        }
+        device.checkPassword(password, function(err, isMatch) {
+            if (err) { res.json({"data": err})}
+            if (isMatch) {
+                next();
+            } else {
+                res.json({"data": "invalid"});
+            }
+        });
+    });
+    //res.json({"data": "hello " + username, "data2": "your password is: " +password, "result": t});
+});
+router.post("/catch", function (req, res) {
+    // res.json({"data": "success"});
+    var data = req.body;
+    Link.findOneAndUpdate({"devicename": data.devicename}, {"status": "Fingerprint", "fingerprint": parseInt(data.id)}, function(err, doc){
+        if (err) return res.send(500, { error: err });
+        Devuser.findOne({username: doc.username}, function (err, user) {
+            if(data.id == user.fingerprintID){
+                res.json({"data": "successful"});
+            }
+            else{ res.json({"data": "not success"});}
+        });
+    });
+    // var newDevuser = new Devuser({
+    //     username: username,
+    //     password: password
+    // });
+    // newDevuser.save();
+});
+
 
 router.post("/setlink", function (req, res) {
     var data = req.body;
-    Link.remove({"processName": "Register"}, function (err) {
+    //removes all previous data so the scanner only deals with one request at a time
+    Link.remove({}, function (err) {//could remove based on process or username
         if(err) console.log(err);
     });
     var newLink = new Link({
@@ -166,31 +205,42 @@ router.post("/setlink", function (req, res) {
         processName: data.process,
         devicename: data.device
     });
-    newLink.save(function(err,resp) {
-        if(err) {
-            console.log(err);
-            res.send({
-                message :'something went wrong'
-            });
-        }
-    });
+    newLink.save();
     res.json({"id": data.id});
 });
-
 router.post("/getconnection", function (req, res) {
     var data = req.body;
     Link.findOne({"linkID": data.id} ,function(err, link) {
         if (err) { oonsole.log(err)}
-        if(link.processName === data.process){
-            if(link.status === "WaitingF"){
-                res.json({ "link": link, "status": "waiting"});
+        if(link){
+            if(link.processName === data.process){
+                if(link.status === "WaitingF"){
+                    res.json({ "link": link, "status": "waiting"});
+                }
+                if(link.status === "Fingerprint"){//fingerprint connection established
+                    if(link.processName === "Deleting"){
+                        Devuser.findOne({"username": link.username, "fingerprintID": link.fingerprint}, function (err, devuser) {
+                            if (err) { oonsole.log(err)}
+                            if(devuser){
+                                res.json({ "link": link.fingerprint, "status": "Fingerprint"});
+                            }
+                            else{
+                                res.json({ "link": link.fingerprint, "status": "IncorrectUser"});
+                            }
+                        });
+                    }
+                    if(link.processName === "Register"){
+                        res.json({ "link": link.fingerprint, "status": "Fingerprint"});
+                    }
+                    // res.json({ "link": link.fingerprint, "status": "Fingerprint"});
+                    //I should actually change this status to done here
+                }
             }
-            if(link.status === "Fingerprint"){//fingerprint connection established
-                res.json({ "link": link.fingerprint, "status": "Fingerprint"});
-                //I should actually change this status to done here
-            }
+            else{ res.json({"status": "not fine"});}
+        }else{
+            res.json({"status": "no link"});
         }
-        else{ res.json({"status": "not fine"});}
+
     });
 });
 
@@ -198,14 +248,33 @@ router.post("/registeruser", function (req, res) {
     //var data = req.body;
     Link.findOne({"processName": "Register", "status": "Fingerprint"} ,function(err, link) {
         if (err) { oonsole.log(err)}
-        var newDevuser = new Devuser({
-            username: link.username,
-            devicename: link.devicename,
-            fingerprintID: link.fingerprint
+        Devuser.findOne({"username": link.username}, function (err, devuser) {
+            if(devuser){
+                Devuser.findOneAndUpdate({"username": link.username}, {"fingerprintID": link.fingerprint}, function(err, doc){
+                    if (err) return res.send(500, { error: err });
+                    res.sendStatus(200);
+                });
+            }else{
+                var newDevuser = new Devuser({
+                    username: link.username,
+                    devicename: link.devicename,
+                    fingerprintID: link.fingerprint
+                });
+                newDevuser.save();
+                User.findOneAndUpdate({"username": link.username}, {"registered": true}, function(err, doc){
+                    if (err) return res.send(500, { error: err });
+                    res.sendStatus(200);
+                });
+            }
         });
-        newDevuser.save();
-        User.findOneAndUpdate({"username": link.username}, {"registered": true}, function(err, doc){
-            if (err) return res.send(500, { error: err });
+    });
+});
+router.post("/deleteuser",function (req, res) {
+    var data = req.body;
+    User.remove({"username": data.nameToDelete}, function (err) {
+        if(err) console.log(err);
+        Devuser.remove({"username": data.nameToDelete}, function (err) {
+            if(err) console.log(err);
             res.sendStatus(200);
         });
     });
