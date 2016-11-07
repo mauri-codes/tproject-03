@@ -26,6 +26,13 @@ router.get("/", function(req, res, next) {
 router.get("/signup", function(req, res) {
     res.render("signup");
 });
+router.get("/devices/:device", ensureAuthenticated, function(req, res, next) {
+    Devuser.find({ devicename: req.params.device }, function(err, device) {
+        if (err) { return next(err); }
+        if (!device) { return next(404); }
+        res.render("devuser", { device: device });
+    });
+});
 router.post("/signup", function(req, res, next) {
     var username = req.body.username;
     var password = req.body.password;

@@ -4,7 +4,9 @@
     <% devices.forEach(function(device) { %>
     <div class="panel panel-default">
         <div class="dev panel-heading">
-            <%= device.name() %>
+            <a href="/devices/<%= device.name() %>">
+                <%= device.name() %>
+            </a>
             <% if(currentUser.registered) { %>
             <p class="registered label label-success pull-right"> Registrado </p>
             <% } %>
