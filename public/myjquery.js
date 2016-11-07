@@ -3,29 +3,33 @@ var waitingAnnounce2 = $("<div class='announce well'> " +
     "<img class= 'loading' src='/images/ajax-loader.gif' alt='Be patient...' />" +
     "</div><div class='loadingmessage'>Connectando ... </div></div>");
 $(document).ready(function(){
-    //alert("Hello! I am an alert box!!");
-    var y = 0;
+    
     $(".delete").on("click", function(){
         var userToDelete = $(this).attr('id');
         $("." + userToDelete).append(waitingAnnounce2);
         setLink("Deleting", userToDelete);
-        // y = y + 1;
-        // if(y == 1){
-        //     $('.devall').append(waitingAnnounce);
-        //     $('.dev').append(cancelB);
-        // }else{
-        //     cancelB.show();
-        //     waitingAnnounce.show();
-        // }
-        // setLinkRegister();
     });
+    
     $(".register").on("click", function(){
         $(".newDev").hide();
         $('.devall').append(waitingAnnounce2);
         setLink("Register");
     });
+
+    $(".deletereg").on("click", function () {
+        var registerToDelete = $(this).parent().children(":first-child").text();
+        $(this).parent().parent().after(waitingAnnounce2);
+        setLink("DeleteR", registerToDelete.trim());
+    });
+
+    $(".acceptreg").on("click", function () {
+        var registerToAccept = $(this).parent().children(":first-child").text();
+        $(this).parent().parent().after(waitingAnnounce2);
+        setLink("AcceptReg", registerToAccept.trim());
+    });
+    
 });
-function setLink() {//setLinkI2
+function setLink() {
     var process = arguments[0];
     var nameToDelete = arguments[1];
     var namex = $(".hello").attr('id');
@@ -35,13 +39,13 @@ function setLink() {//setLinkI2
         data: {
             "name": namex, // who makes the request
             "status": "WaitingF",
-            "process": process,//Register or Deleting
+            "process": process,//Register, Deleting or DeletingR
             "device": "Scanner-Digital-001",
             "id": parseInt(Random(1,100000))
         },
         success: function (databack) {
             $(".loadingmessage").text("Esperando coneccion del dispositivo");
-            if(process == "Deleting"){
+            if(process == "Deleting" || process == "DeleteR" || process == "AcceptReg"){
                 findConnection(6, databack.id, process, nameToDelete);
             }else if(process == "Register"){
                 findConnection(6, databack.id, process);
@@ -58,7 +62,7 @@ function findConnection() {
     var n = arguments[0];
     var id = arguments[1];
     var process = arguments[2];
-    if(process == "Deleting")
+    //if(process == "Deleting") // uncommenting this could result in a bug with DeleteR or AcceptReg
         var nameToDelete = arguments[3];
     if(n === 0){
         removeMessage("Tiempo Fuera, Cancelando Solicitud");
@@ -74,7 +78,7 @@ function findConnection() {
         },
         success: function (data) {
             if(data.status === "waiting"){
-                if(process == "Deleting")
+                if(process == "Deleting" || process == "DeleteR" || process == "AcceptReg")
                     setTimeout(findConnection, 5000, n-1, id, process, nameToDelete);
                 else if(process == "Register")
                     setTimeout(findConnection, 5000, n-1, id, process);
@@ -86,13 +90,18 @@ function findConnection() {
                     DeleteUser(nameToDelete);
                 }else if(process === "Register"){
                     RegisterUser();
+                }else if(process === "DeleteR"){
+                    DeleteRegister(nameToDelete);
+                }else if(process === "AcceptReg"){
+                    AcceptRegister(nameToDelete);
                 }
-                //RegisterUser();
-                //ajaxDelete(nameToDelete);
             } else if(data.status === "IncorrectUser"){
                 removeMessage("Identificacion de Huella Digital Fallida");
             }else if(data.status === "no link"){
+                alert("no link");
                 //if ever needed to do something when no link is found
+            }else if(data.status === "notaccepted"){
+                removeMessage("Tu huella necesita ser aceptada por un administrador");
             }
 
         },
@@ -109,6 +118,24 @@ function removeMessage(message){
 }
 function Random(min, max) {
     return Math.random() * (max - min) + min;
+}
+function DeleteRegister(nameToDelete) {
+    $.ajax({
+        type:'POST',
+        url: '/deletereg',
+        data: {"nameToDelete": nameToDelete},
+        success: function () {
+            removeMessage("Registro de usuario " + nameToDelete +
+                " borrado exitosamente de la base de datos");
+            setTimeout(function () {
+                $("." + nameToDelete).remove();
+            }, 2000);
+
+        },
+        error: function () {
+            alert("error delete user");
+        }
+    });
 }
 function RegisterUser() {
     $.ajax({
@@ -132,6 +159,26 @@ function DeleteUser(nameToDelete) {
             removeMessage("Usuario " + nameToDelete + " borrado exitosamente de la base de datos");
             setTimeout(function () {
                 $("." + nameToDelete).parent().remove();
+            }, 2000);
+
+        },
+        error: function () {
+            alert("error delete user");
+        }
+    });
+}
+
+function AcceptRegister(nameToRegister) {
+    $.ajax({
+        type:'POST',
+        url: '/acceptregister',
+        data: {"nameToAccept": nameToRegister},
+        success: function () {
+            removeMessage("Usuario " + nameToRegister + " aceptado");
+            setTimeout(function () {
+                $("." + nameToRegister).children(":first-child").children(":last-child").remove();
+                $("." + nameToRegister).children(":first-child").children(":last-child").remove();
+                $("." + nameToRegister).children(":first-child").append('<p class="deletereg btn btn-danger btn-xs pull-right">Eliminar Registro</p>');
             }, 2000);
 
         },

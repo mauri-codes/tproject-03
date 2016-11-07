@@ -2,16 +2,16 @@
 <h2>Usuarios Registrados en <%=device[0].devicename%></h2>
 <div>
     <% device.forEach(function(dev) { %>
-    <div class="panel panel-default">
+    <div class="panel panel-default <%= dev.username %>">
         <div class="panel-heading">
             <a href="/users/<%= dev.username %>">
                 <%= dev.username %>
             </a>
             <%if(dev.accepted){%>
-                <p class="btn btn-danger btn-xs pull-right">Eliminar Registro</p>
+                <p class="deletereg btn btn-danger btn-xs pull-right">Eliminar Registro</p>
             <%} else {%>
-                <p class="btn btn-success btn-xs pull-right">Aceptar</p>
-                <p class="btn btn-danger btn-xs pull-right">Eliminar</p>
+                <p class="deletereg btn btn-warning btn-xs pull-right">Rechazar</p>
+                <p class="acceptreg btn btn-success btn-xs pull-right">Aceptar</p>
             <%}%>
         </div>
     </div>

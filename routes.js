@@ -225,11 +225,14 @@ router.post("/getconnection", function (req, res) {
                     res.json({ "link": link, "status": "waiting"});
                 }
                 if(link.status === "Fingerprint"){//fingerprint connection established
-                    if(link.processName === "Deleting"){
+                    if(link.processName === "Deleting" || link.processName === "DeleteR" || link.processName === "AcceptReg"){
                         Devuser.findOne({"username": link.username, "fingerprintID": link.fingerprint}, function (err, devuser) {
                             if (err) { oonsole.log(err)}
                             if(devuser){
-                                res.json({ "link": link.fingerprint, "status": "Fingerprint"});
+                                if(devuser.accepted)
+                                    res.json({ "link": link.fingerprint, "status": "Fingerprint"});
+                                else
+                                    res.json({ "link": link.fingerprint, "status": "notaccepted"});
                             }
                             else{
                                 res.json({ "link": link.fingerprint, "status": "IncorrectUser"});
@@ -276,7 +279,7 @@ router.post("/registeruser", function (req, res) {
         });
     });
 });
-router.post("/deleteuser",function (req, res) {
+router.post("/deleteuser", function (req, res) {
     var data = req.body;
     User.remove({"username": data.nameToDelete}, function (err) {
         if(err) console.log(err);
@@ -284,6 +287,22 @@ router.post("/deleteuser",function (req, res) {
             if(err) console.log(err);
             res.sendStatus(200);
         });
+    });
+});
+router.post("/deletereg", function (req, res) {
+    var data = req.body;
+    Devuser.remove({"username": data.nameToDelete}, function (err) {
+        if(err) console.log(err);
+        console.log(data.nameToDelete);
+        res.sendStatus(200);
+    });
+});
+
+router.post("/acceptregister", function (req, res) {
+    var data = req.body;
+    Devuser.findOneAndUpdate({"username": data.nameToAccept}, {"accepted": true}, function(err, doc){
+        if (err) return res.send(500, { error: err });
+        res.sendStatus(200);
     });
 });
 
